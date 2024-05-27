@@ -59,7 +59,7 @@ export default async function PostForm({ post, action }: PostFormProps) {
     }
     const newPost = await createPost({
       ...values,
-      userId: user.id,
+      userId: user?.id,
     });
     if (!newPost) {
       toast({
