@@ -1,5 +1,4 @@
-import { profile } from "console";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 
 export const createUser = internalMutation({
@@ -17,6 +16,9 @@ export const createUser = internalMutation({
       name: args.name,
       imageUrl: args.imageUrl,
       clerk_Id: args.clerk_Id,
+      bio: "",
+      followers: [],
+      following: [],
     });
   },
 });
@@ -100,5 +102,52 @@ export const getUserById = query({
       .query("users")
       .withIndex("by_id", (q) => q.eq("_id", args.profileId))
       .first();
+  },
+});
+
+export const toggleFollow = mutation({
+  args: {
+    followId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("User not authenticated");
+    }
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerk_Id", identity.subject))
+      .first();
+
+    if (!user) {
+      throw new ConvexError("User does not exist");
+    }
+
+    const followUser = await ctx.db
+      .query("users")
+      .withIndex("by_id", (q) => q.eq("_id", args.followId))
+      .first();
+
+    if (!followUser) {
+      throw new ConvexError("User does not exist");
+    }
+
+    if (user.following.includes(args.followId)) {
+      await ctx.db.patch(user._id, {
+        following: user.following.filter((id) => id !== args.followId),
+      });
+      await ctx.db.patch(args.followId, {
+        followers: followUser.following.filter((id) => id !== user._id),
+      });
+      return { message: "User unfollowed successfully" };
+    } else {
+      await ctx.db.patch(user._id, {
+        following: [...user.following, args.followId],
+      });
+      await ctx.db.patch(args.followId, {
+        followers: [...followUser.following, user._id],
+      });
+      return { message: "User followed successfully" };
+    }
   },
 });

@@ -21,6 +21,10 @@ export default function PostDetails() {
   const deletePost = useMutation(api.posts.deletePost);
 
   const handleDeletePost = async () => {
+    if (user?._id !== post?.authorId) {
+      toast.error("You are not authorized to delete this post");
+      return;
+    }
     const deletedPost = await deletePost({ postId: postId });
     if (deletedPost) {
       toast.success("Post deleted successfully");
@@ -30,22 +34,22 @@ export default function PostDetails() {
 
   return (
     <div className="post_details-container">
-      {!user && !post ? (
+      {!user || !post ? (
         <div className="w-full h-screen flex justify-center items-center">
           <Loader className="w-8 h-8 animate-spin" />
         </div>
       ) : (
         <div className="post_details-card">
-          <img src={post?.imageUrl} alt="post" className="post_details-img" />
+          <img src={post.imageUrl} alt="post" className="post_details-img" />
           <div className="post_details-info">
             <div className="flex-between w-full">
               <Link
-                href={`/profile/${post?.authorId}`}
+                href={`/profile/${post.authorId}`}
                 className="flex items-center gap-3"
               >
                 <Image
                   src={
-                    post?.authorImage || "/assets/icons/profile-placeholder.svg"
+                    post.authorImage || "/assets/icons/profile-placeholder.svg"
                   }
                   alt="creator"
                   className="rounded-full w-8 h-8 lg:h-12 lg:w-12"
@@ -55,23 +59,23 @@ export default function PostDetails() {
 
                 <div className="flex flex-col">
                   <p className="base-medium lg:body-bold text-light-1">
-                    {post?.authorName}
+                    {post.authorName}
                   </p>
                   <div className="flex-center gap-2 text-light-3">
                     <p className="subtle-semibold lg:small-regular">
-                      {formatRelativeDate(post?._creationTime)}
+                      {formatRelativeDate(post._creationTime)}
                     </p>
                     -
                     <p className="subtle-semibold lg:small-regular">
-                      {post?.location}
+                      {post.location}
                     </p>
                   </div>
                 </div>
               </Link>
               <div className="flex-center">
                 <Link
-                  href={`/update-post/${post?._id}`}
-                  className={`${user?._id !== post?.authorId && "hidden"}`}
+                  href={`/update-post/${post._id}`}
+                  className={`${user._id !== post.authorId && "hidden"}`}
                 >
                   <Image
                     src="/assets/icons/edit.svg"
@@ -84,7 +88,7 @@ export default function PostDetails() {
                 <Button
                   onClick={handleDeletePost}
                   variant="ghost"
-                  className={`ghost_details-delete_btn ${user?._id !== post?.authorId && "hidden"}`}
+                  className={`ghost_details-delete_btn ${user._id !== post.authorId && "hidden"}`}
                 >
                   <Image
                     src="/assets/icons/delete.svg"
@@ -97,9 +101,9 @@ export default function PostDetails() {
             </div>
             <hr className="border w-full border-dark-4/80" />
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
-              <p>{post?.caption}</p>
+              <p>{post.caption}</p>
               <ul className="flex gap-1 mt-2">
-                {post?.tags.map((tag: string) => (
+                {post.tags.map((tag: string) => (
                   <li key={tag} className="text-light-3">
                     #{tag}
                   </li>
@@ -107,7 +111,7 @@ export default function PostDetails() {
               </ul>
             </div>
             <div className="w-full">
-              {post && user && <PostStats post={post} userId={user._id} />}
+              <PostStats post={post} userId={user._id} />
             </div>
           </div>
         </div>

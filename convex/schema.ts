@@ -9,6 +9,8 @@ export default defineSchema({
     imageUrl: v.optional(v.string()),
     clerk_Id: v.string(),
     bio: v.optional(v.string()),
+    followers: v.array(v.id("users")),
+    following: v.array(v.id("users")),
   }).index("by_clerkId", ["clerk_Id"]),
 
   posts: defineTable({

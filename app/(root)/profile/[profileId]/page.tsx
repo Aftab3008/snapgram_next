@@ -4,11 +4,12 @@ import GridPostList from "@/components/shared/GridPostList";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 interface StabBlockProps {
   value: string | number;
@@ -29,6 +30,15 @@ const Profile = () => {
   const user = useQuery(api.users.getCurrentUser);
   const currentUser = useQuery(api.users.getUserById, { profileId: ProfileId });
   const posts = useQuery(api.posts.getPostsByUser, { userId: ProfileId });
+  const toggelFollow = useMutation(api.users.toggleFollow);
+
+  const handleFollow = async () => {
+    if (user && currentUser && user._id === currentUser._id) {
+      return;
+    }
+    const { message } = await toggelFollow({ followId: ProfileId });
+    toast.success(message);
+  };
 
   if (!currentUser || !user || !posts)
     return (
@@ -59,9 +69,15 @@ const Profile = () => {
             </div>
 
             <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
-              {/* <StatBlock value={currentUser.posts.length} label="Posts" /> */}
-              <StatBlock value={20} label="Followers" />
-              <StatBlock value={20} label="Following" />
+              <StatBlock value={posts.length} label="Posts" />
+              <StatBlock
+                value={currentUser.followers.length}
+                label="Followers"
+              />
+              <StatBlock
+                value={currentUser.following.length}
+                label="Following"
+              />
             </div>
 
             {currentUser.bio && (
@@ -94,8 +110,11 @@ const Profile = () => {
               <Button
                 type="button"
                 className="shad-button_primary px-8 rounded-xl"
+                onClick={handleFollow}
               >
-                Follow
+                {currentUser.followers.includes(user._id)
+                  ? "Unfollow"
+                  : "Follow"}
               </Button>
             </div>
           </div>

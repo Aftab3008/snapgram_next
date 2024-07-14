@@ -16,10 +16,13 @@ export default function Home() {
           <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
           {!user && !posts ? (
             <Loader className="w-8 h-8 animate-spin" color="white" />
+          ) : posts && posts.length == 0 ? (
+            <div className="w-full h-full flex justify-center items-center">
+              <h1 className="text-2xl">No posts yet! create one</h1>
+            </div>
           ) : (
             <ul className="flex flex-col flex-1 gap-9 w-full">
               {user &&
-                posts &&
                 posts?.map((post: Doc<"posts">) => (
                   <PostCard post={post} key={post._id} user={user} />
                 ))}

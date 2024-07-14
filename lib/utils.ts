@@ -5,10 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatRelativeDate(
-  timestamp: number | undefined
-): string | null {
-  if (!timestamp) return null;
+export function formatRelativeDate(timestamp: number): string {
   const date = new Date(timestamp);
   const now = new Date();
   const diff = Math.abs(now.getTime() - date.getTime());
