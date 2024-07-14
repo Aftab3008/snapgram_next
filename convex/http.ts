@@ -15,8 +15,24 @@ http.route({
       return new Response("Error occured", { status: 400 });
     }
     switch (event.type) {
-      case "user.created":
+      case "user.created": {
+        await ctx.runMutation(internal.users.createUser, {
+          username: event.data.username!,
+          email: event.data.email_addresses[0].email_address,
+          name: `${event.data.first_name} ${event.data.last_name}`,
+          imageUrl: event.data.image_url,
+          clerk_Id: event.data.id,
+        });
+        break;
+      }
       case "user.updated":
+        await ctx.runMutation(internal.users.updateUser, {
+          username: event.data.username!,
+          email: event.data.email_addresses[0].email_address,
+          name: `${event.data.first_name} ${event.data.last_name}`,
+          imageUrl: event.data.image_url,
+          clerk_Id: event.data.id,
+        });
         break;
 
       case "user.deleted": {

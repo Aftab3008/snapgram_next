@@ -8,16 +8,13 @@ import { INavLink } from "@/types";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
-  const user = {
-    email: "itsbloodyfang987@gmail.com",
-    id: "2",
-    imageUrl: "/assets/images/profile.png",
-    name: "Bloody Fang",
-    username: "bloodyfang",
-  };
+  const user = useQuery(api.users.getCurrentUser);
+
   return (
     <nav className="leftsidebar">
       <div className="flex flex-col gap-11">
@@ -30,17 +27,17 @@ export default function LeftSidebar() {
           />
         </Link>
 
-        {!user.email ? (
-          <div className="h-14">
-            <Loader className="h-8 w-8 " />
+        {!user ? (
+          <div className="flex justify-center items-center">
+            <Loader className="h-8 w-8 animate-spin" />
           </div>
         ) : (
           <Link
-            href={`/profile/${user.id}`}
+            href={`/profile/${user._id}`}
             className="flex gap-3 items-center"
           >
             <img
-              src={user.imageUrl || "/assets/images/profile.png"}
+              src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
               alt="profile"
               className="rounded-full h-14 w-14"
             />
@@ -79,7 +76,7 @@ export default function LeftSidebar() {
           })}
         </ul>
       </div>
-      <SignOutButton>
+      <SignOutButton redirectUrl="/sign-in">
         <Button variant="ghost" className="shad-button_ghost">
           <img src="/assets/icons/logout.svg" alt="logout" />
           <p className="small-medium lg:base-medium">Logout</p>

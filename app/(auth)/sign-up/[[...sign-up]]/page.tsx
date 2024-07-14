@@ -105,6 +105,36 @@ export default function SignUpPage() {
                     <CardTitle>Continue registration</CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <div className="grid grid-cols-2 gap-4 w-full mb-4">
+                      <Clerk.Field name="firstName" className="space-y-2">
+                        <Clerk.Label>
+                          <Label>Firstname</Label>
+                        </Clerk.Label>
+                        <Clerk.Input
+                          type="text"
+                          required
+                          asChild
+                          className="shad-input rounded-xl p-2"
+                        >
+                          <Input />
+                        </Clerk.Input>
+                        <Clerk.FieldError className="block text-sm text-red" />
+                      </Clerk.Field>
+                      <Clerk.Field name="lastName" className="space-y-2">
+                        <Clerk.Label>
+                          <Label>Lastname</Label>
+                        </Clerk.Label>
+                        <Clerk.Input
+                          type="text"
+                          required
+                          asChild
+                          className="shad-input rounded-xl p-2"
+                        >
+                          <Input />
+                        </Clerk.Input>
+                        <Clerk.FieldError className="block text-sm text-red" />
+                      </Clerk.Field>
+                    </div>
                     <Clerk.Field name="username" className="space-y-2">
                       <Clerk.Label>
                         <Label>Username</Label>

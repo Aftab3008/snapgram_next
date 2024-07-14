@@ -1,16 +1,15 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function Topbar() {
-  const user = {
-    email: "itsbloodyfang987@gmail.com",
-    id: "2",
-    imageUrl: "/assets/images/profile.png",
-  };
+  const user = useQuery(api.users.getCurrentUser);
 
   return (
     <section className="topbar">
@@ -24,19 +23,21 @@ export default function Topbar() {
           />
         </Link>
         <div className="flex gap-4">
-          <SignOutButton>
+          <SignOutButton redirectUrl="/sign-in">
             <Button variant="ghost" className="shad-button_ghost">
               <img src="/assets/icons/logout.svg" alt="logout" />
             </Button>
           </SignOutButton>
-          {!user.email ? (
-            <Loader className="h-8 w-8" />
+          {!user ? (
+            <Loader className="h-4 w-4 animate-spin" />
           ) : (
-            <Link href={`/profile/${user.id}`} className="flex-center gap-3">
-              <img
-                src={user.imageUrl || "/assets/images/profile.png"}
+            <Link href={`/profile/${user._id}`} className="flex-center gap-3">
+              <Image
+                src={user?.imageUrl || "/assets/icons/profile-placeholder.svg"}
                 alt="profile"
-                className="rounded-full h-8 w-8"
+                className="rounded-full"
+                width={32}
+                height={32}
               />
             </Link>
           )}
