@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 
@@ -260,5 +261,28 @@ export const getPostsByUser = query({
       .query("posts")
       .withIndex("by_authorId", (q) => q.eq("authorId", args.userId))
       .collect();
+  },
+});
+
+export const paginatePosts = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("posts")
+      .order("desc")
+      .paginate(args.paginationOpts);
+  },
+});
+
+export const userLikedPosts = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+    const posts = await ctx.db.query("posts").collect();
+    const likedPosts = posts.filter((post) => post.liked.includes(args.userId));
+    return likedPosts;
   },
 });

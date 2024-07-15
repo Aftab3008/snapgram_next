@@ -7,6 +7,7 @@ export default defineSchema({
     email: v.string(),
     name: v.string(),
     imageUrl: v.optional(v.string()),
+    imageId: v.optional(v.string()),
     clerk_Id: v.string(),
     bio: v.optional(v.string()),
     followers: v.array(v.id("users")),

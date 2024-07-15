@@ -5,15 +5,16 @@ import Image from "next/image";
 
 type UserCardProps = {
   user: Doc<"users">;
+  currentUser: Doc<"users">;
 };
 
-const UserCard = ({ user }: UserCardProps) => {
+const UserCard = ({ user, currentUser }: UserCardProps) => {
   return (
     <Link href={`/profile/${user._id}`} className="user-card">
       <Image
         src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
         alt="creator"
-        className="rounded-full"
+        className="rounded-full min-w-[56px] min-h-[56px]"
         width={56}
         height={56}
       />
@@ -30,9 +31,9 @@ const UserCard = ({ user }: UserCardProps) => {
       <Button
         type="button"
         size="sm"
-        className="shad-button_primary px-5 rounded-xl"
+        className={`text-light-1 flex gap-2 px-5 rounded-xl ${currentUser.following.includes(user._id) ? "bg-dark-4 hover:bg-dark-4" : "bg-primary-500 hover:bg-primary-500"}`}
       >
-        Follow
+        {currentUser.following.includes(user._id) ? "Unfollow" : "Follow"}
       </Button>
     </Link>
   );

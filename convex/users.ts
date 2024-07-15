@@ -151,3 +151,90 @@ export const toggleFollow = mutation({
     }
   },
 });
+
+export const updateUserData = mutation({
+  args: {
+    name: v.string(),
+    imageId: v.optional(v.id("_storage")),
+    bio: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("User not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerk_Id", identity.subject))
+      .first();
+
+    if (!user) {
+      throw new ConvexError("User does not exist");
+    }
+
+    let fileUrl = null;
+    let fileId = null;
+    if (args.imageId) {
+      fileId = args.imageId;
+      fileUrl = await ctx.storage.getUrl(args.imageId);
+    } else {
+      fileUrl = user.imageId;
+      fileUrl = user.imageUrl;
+    }
+
+    await ctx.db.patch(user._id, {
+      name: args.name,
+      imageId: fileId!,
+      imageUrl: fileUrl!,
+      bio: args.bio,
+    });
+
+    const userPosts = await ctx.db
+      .query("posts")
+      .filter((q) => q.eq(q.field("authorId"), user._id))
+      .collect();
+
+    for (const post of userPosts) {
+      await ctx.db.patch(post._id, {
+        authorName: args.name,
+        authorImage: fileUrl!,
+      });
+    }
+
+    return {
+      message: "Updated successfully",
+    };
+  },
+});
+
+export const getUsersYouMayKnow = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("User not authenticated");
+    }
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerk_Id", identity.subject))
+      .first();
+    if (!user) {
+      throw new ConvexError("User does not exist");
+    }
+
+    const users = await ctx.db.query("users").collect();
+    let usersYouMayKnow = users.filter(
+      (u) => !user.following.includes(u._id) && u._id !== user._id
+    );
+
+    if (usersYouMayKnow.length > 4) {
+      usersYouMayKnow = usersYouMayKnow.slice(0, 4);
+    }
+    if (usersYouMayKnow.length === 0) {
+      usersYouMayKnow = users.filter((u) => u._id !== user._id).slice(0, 4);
+    }
+
+    return usersYouMayKnow;
+  },
+});

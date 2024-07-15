@@ -1,14 +1,23 @@
 "use client";
 
+import EditProfileCard from "@/components/shared/EditProfileCard";
 import GridPostList from "@/components/shared/GridPostList";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface StabBlockProps {
@@ -26,11 +35,12 @@ const StatBlock = ({ value, label }: StabBlockProps) => (
 const Profile = () => {
   const Params = useParams();
   const ProfileId = Params.profileId as Id<"users">;
-  const pathname = usePathname();
   const user = useQuery(api.users.getCurrentUser);
   const currentUser = useQuery(api.users.getUserById, { profileId: ProfileId });
   const posts = useQuery(api.posts.getPostsByUser, { userId: ProfileId });
+  const postsLiked = useQuery(api.posts.userLikedPosts, { userId: ProfileId });
   const toggelFollow = useMutation(api.users.toggleFollow);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleFollow = async () => {
     if (user && currentUser && user._id === currentUser._id) {
@@ -40,7 +50,7 @@ const Profile = () => {
     toast.success(message);
   };
 
-  if (!currentUser || !user || !posts)
+  if (!currentUser || !user || !posts || !postsLiked)
     return (
       <div className="flex-center w-full h-full">
         <Loader className="w-8 h-8 animate-spin" />
@@ -89,22 +99,42 @@ const Profile = () => {
 
           <div className="flex justify-center gap-4">
             <div className={`${user._id !== currentUser._id && "hidden"}`}>
-              <Link
-                href={`/update-profile/${currentUser._id}`}
-                className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-xl ${
-                  user._id !== currentUser._id && "hidden"
-                }`}
-              >
-                <Image
-                  src={"/assets/icons/edit.svg"}
-                  alt="edit"
-                  width={20}
-                  height={20}
-                />
-                <p className="flex whitespace-nowrap small-medium">
-                  Edit Profile
-                </p>
-              </Link>
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger
+                  className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-xl ${
+                    user._id !== currentUser._id && "hidden"
+                  }`}
+                >
+                  <Image
+                    src={"/assets/icons/edit.svg"}
+                    alt="edit"
+                    width={20}
+                    height={20}
+                  />
+                  <p className="flex whitespace-nowrap small-medium">
+                    Edit Profile
+                  </p>
+                </DialogTrigger>
+                <DialogContent className="bg-dark-1 w-full dialog-content rounded-2xl border-primary-500">
+                  <DialogTitle className="flex gap-4 mt-2">
+                    <Image
+                      src="/assets/icons/edit.svg"
+                      width={36}
+                      height={36}
+                      alt="edit"
+                      className="invert-white"
+                    />
+                    <h2 className="h3-bold md:h2-bold text-left w-full">
+                      Edit Profile
+                    </h2>
+                  </DialogTitle>
+                  <EditProfileCard
+                    user={user}
+                    currentUserId={currentUser._id}
+                    setIsOpen={setIsOpen}
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
             <div className={`${user._id === currentUser._id && "hidden"}`}>
               <Button
@@ -121,39 +151,67 @@ const Profile = () => {
         </div>
       </div>
 
-      {currentUser._id === user._id && (
-        <div className="flex max-w-5xl w-full gap-2">
-          <Link
-            href={`/profile/${ProfileId}`}
-            className={`profile-tab rounded-xl ${
-              pathname === `/profile/${ProfileId}` && "!bg-dark-3"
-            }`}
-          >
-            <Image
-              src={"/assets/icons/posts.svg"}
-              alt="posts"
-              width={20}
-              height={20}
-            />
-            Posts
-          </Link>
-          <Link
-            href={`/profile/${ProfileId}/liked-posts`}
-            className={`profile-tab rounded-xl ${
-              pathname === `/profile/${ProfileId}/liked-posts` && "!bg-dark-3"
-            }`}
-          >
-            <Image
-              src={"/assets/icons/like.svg"}
-              alt="like"
-              width={20}
-              height={20}
-            />
-            Liked Posts
-          </Link>
-        </div>
-      )}
-      <GridPostList posts={posts} showUser={false} />
+      <Tabs defaultValue="posts" className="flex flex-col">
+        <TabsList className="flex md:justify-start justify-center items-center h-fit w-full max-w-5xl mb-5">
+          <div className="flex gap-2">
+            <TabsTrigger
+              value="posts"
+              className={`profile-tab  w-full rounded-xl data-[state=active]:!bg-dark-3 data-[state=inactive]:bg-black`}
+            >
+              <Image
+                src={"/assets/icons/posts.svg"}
+                alt="posts"
+                width={20}
+                height={20}
+              />
+              Posts
+            </TabsTrigger>
+            {currentUser._id === user._id && (
+              <TabsTrigger
+                value="likedPosts"
+                className={`profile-tab w-full rounded-xl data-[state=active]:!bg-dark-3 data-[state=inactive]:bg-black`}
+              >
+                <Image
+                  src={"/assets/icons/like.svg"}
+                  alt="like"
+                  width={20}
+                  height={20}
+                />
+                Liked Posts
+              </TabsTrigger>
+            )}
+          </div>
+        </TabsList>
+        <TabsContent value="posts">
+          {posts.length == 0 ? (
+            <div className="flex gap-4 flex-col items-center justify-center">
+              <h1 className="text-xl mt-10">No posts!</h1>
+              <Link
+                href="/create-post"
+                className="mt-10 bg-dark-4 p-4 rounded-xl"
+              >
+                Create one
+              </Link>
+            </div>
+          ) : (
+            <GridPostList posts={posts} showUser={false} />
+          )}
+        </TabsContent>
+        {currentUser._id === user._id && (
+          <TabsContent value="likedPosts">
+            {postsLiked.length == 0 ? (
+              <div className="flex gap-4 flex-col items-center justify-center">
+                <h1 className="text-xl mt-10">No posts liked !</h1>
+                <Link href="/" className="mt-10 bg-dark-4 p-4 rounded-xl">
+                  View Posts
+                </Link>
+              </div>
+            ) : (
+              <GridPostList posts={postsLiked} showStats={false} />
+            )}
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   );
 };

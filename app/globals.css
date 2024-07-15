@@ -109,7 +109,7 @@
   }
 
   .common-container {
-    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
+    @apply flex flex-col flex-1 items-center gap-7 overflow-scroll py-6 px-3 md:px-5 lg:p-10 custom-scrollbar;
   }
 
   /* All Users */
@@ -298,4 +298,17 @@
     rgba(255, 255, 255, 0) 0%,
     rgba(0, 0, 0, 0.7) 100%
   );
+}
+.dialog-content {
+  @apply overflow-auto;
+  max-height: 90vh; /* Adjust based on preference */
+  /* width: auto; */
+  max-width: 800px; /* Adjust based on preference */
+}
+
+@media (max-width: 768px) {
+  .dialog-content {
+    max-width: 90%;
+    padding: 20px; /* Adjust based on preference */
+  }
 }

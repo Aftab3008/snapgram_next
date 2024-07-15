@@ -35,7 +35,7 @@ export default function Topbar() {
               <Image
                 src={user?.imageUrl || "/assets/icons/profile-placeholder.svg"}
                 alt="profile"
-                className="rounded-full"
+                className="rounded-full min-w-[32px] min-h-[32px]"
                 width={32}
                 height={32}
               />

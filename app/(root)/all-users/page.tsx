@@ -6,12 +6,13 @@ import { Loader } from "lucide-react";
 
 const AllUsers = () => {
   const creators = useQuery(api.users.getUsers);
+  const currentUser = useQuery(api.users.getCurrentUser);
 
   return (
     <div className="common-container">
       <div className="user-container">
         <h2 className="h3-bold md:h2-bold text-left w-full">Other Users</h2>
-        {!creators ? (
+        {!creators || !currentUser ? (
           <div className="flex h-full w-full items-center justify-center">
             <Loader className="w-8 h-8 animate-spin" />
           </div>
@@ -23,7 +24,7 @@ const AllUsers = () => {
           <ul className="user-grid">
             {creators.map((creator) => (
               <li key={creator._id} className="flex-1 min-w-[200px] w-full">
-                <UserCard user={creator} />
+                <UserCard user={creator} currentUser={currentUser}/>
               </li>
             ))}
           </ul>

@@ -25,3 +25,5 @@ export function formatRelativeDate(timestamp: number): string {
     return `${seconds} second${seconds > 1 ? "s" : ""} ago`;
   }
 }
+
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file);

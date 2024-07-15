@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "img.clerk.com",
       },
+      {
+        protocol: "https",
+        hostname: "proper-alpaca-499.convex.cloud",
+      },
     ],
   },
 };
