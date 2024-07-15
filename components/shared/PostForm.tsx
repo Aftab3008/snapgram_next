@@ -26,7 +26,7 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { Loader } from "lucide-react";
 
 type PostFormProps = {
-  post: Doc<"posts">;
+  post?: Doc<"posts">;
   action: "create" | "update";
 };
 
