@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { Loader } from "lucide-react";
 import Image from "next/image";
@@ -189,7 +190,9 @@ const Profile = () => {
               <h1 className="text-xl mt-10">No posts!</h1>
               <Link
                 href="/create-post"
-                className="mt-10 bg-dark-4 p-4 rounded-xl"
+                className={cn("mt-10 bg-dark-4 p-4 rounded-xl", {
+                  hidden: user._id !== currentUser._id,
+                })}
               >
                 Create one
               </Link>
