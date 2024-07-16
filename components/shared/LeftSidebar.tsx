@@ -1,15 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { Loader } from "lucide-react";
 import { sidebarLinks } from "@/constants";
-import { INavLink } from "@/types";
-import { usePathname } from "next/navigation";
+import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
+import { INavLink } from "@/types";
 import { SignOutButton } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
+import ProfileSkeleton from "./ProfileSkeleton";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -29,7 +29,7 @@ export default function LeftSidebar() {
 
         {!user ? (
           <div className="flex justify-center items-center">
-            <Loader className="h-8 w-8 animate-spin" />
+            <ProfileSkeleton position="bottom" height={14} width={14} />
           </div>
         ) : (
           <Link

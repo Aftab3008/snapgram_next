@@ -1,9 +1,9 @@
 "use client";
 
 import GridPostList from "@/components/shared/GridPostList";
+import { SavedSkeleton } from "@/components/shared/SavedSkeleton";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { Loader } from "lucide-react";
 import Image from "next/image";
 
 const Saved = () => {
@@ -22,7 +22,9 @@ const Saved = () => {
       </div>
 
       {!savePosts ? (
-        <Loader className="w-8 h-8 animate-spin" />
+        <div>
+          <SavedSkeleton />
+        </div>
       ) : (
         <ul className="w-full flex justify-center max-w-5xl gap-9">
           {savePosts && savePosts.length === 0 ? (

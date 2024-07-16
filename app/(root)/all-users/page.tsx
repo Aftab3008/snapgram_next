@@ -1,8 +1,8 @@
 "use client";
 import UserCard from "@/components/shared/UserCard";
+import { UserSkeleton } from "@/components/shared/UserSkeleton";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { Loader } from "lucide-react";
 
 const AllUsers = () => {
   const creators = useQuery(api.users.getUsers);
@@ -13,8 +13,10 @@ const AllUsers = () => {
       <div className="user-container">
         <h2 className="h3-bold md:h2-bold text-left w-full">Other Users</h2>
         {!creators || !currentUser ? (
-          <div className="flex h-full w-full items-center justify-center">
-            <Loader className="w-8 h-8 animate-spin" />
+          <div className="user-grid">
+            <UserSkeleton />
+            <UserSkeleton />
+            <UserSkeleton />
           </div>
         ) : creators.length === 0 ? (
           <div className="flex w-full items-center justify-center mt-10 text-2xl text-light-3">
@@ -24,7 +26,7 @@ const AllUsers = () => {
           <ul className="user-grid">
             {creators.map((creator) => (
               <li key={creator._id} className="flex-1 min-w-[200px] w-full">
-                <UserCard user={creator} currentUser={currentUser}/>
+                <UserCard user={creator} currentUser={currentUser} />
               </li>
             ))}
           </ul>

@@ -1,12 +1,12 @@
 "use client";
 
+import { api } from "@/convex/_generated/api";
+import { SignOutButton } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { Loader } from "lucide-react";
-import { SignOutButton } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import ProfileSkeleton from "./ProfileSkeleton";
 
 export default function Topbar() {
   const user = useQuery(api.users.getCurrentUser);
@@ -29,7 +29,9 @@ export default function Topbar() {
             </Button>
           </SignOutButton>
           {!user ? (
-            <Loader className="h-4 w-4 animate-spin" />
+            <div className="flex justify-center items-center">
+              <ProfileSkeleton position="top" height={8} width={8} />
+            </div>
           ) : (
             <Link href={`/profile/${user._id}`} className="flex-center gap-3">
               <Image
