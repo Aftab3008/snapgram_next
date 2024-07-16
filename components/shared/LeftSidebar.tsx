@@ -10,6 +10,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import ProfileSkeleton from "./ProfileSkeleton";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -36,11 +37,11 @@ export default function LeftSidebar() {
             href={`/profile/${user._id}`}
             className="flex gap-3 items-center"
           >
-            <img
-              src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
-              alt="profile"
-              className="rounded-full h-14 w-14"
-            />
+            <Avatar className="h-14 w-14">
+              <AvatarImage
+                src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
+              />
+            </Avatar>
             <div className="flex flex-col">
               <p className="body-bold">{user.name}</p>
               <p className="small-regular text-light-3">@{user.username}</p>

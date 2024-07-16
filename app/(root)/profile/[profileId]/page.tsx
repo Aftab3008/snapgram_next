@@ -2,6 +2,7 @@
 
 import EditProfileCard from "@/components/shared/EditProfileCard";
 import GridPostList from "@/components/shared/GridPostList";
+import { ProfilPageSkeleton } from "@/components/shared/ProfilePageSkeleton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -52,8 +53,8 @@ const Profile = () => {
 
   if (!currentUser || !user || !posts || !postsLiked)
     return (
-      <div className="flex-center w-full h-full">
-        <Loader className="w-8 h-8 animate-spin" />
+      <div className="profile-container">
+        <ProfilPageSkeleton />
       </div>
     );
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Doc } from "@/convex/_generated/dataModel";
 import PostStats from "./PostStats";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 type PostCardProps = {
   post: Doc<"posts">;
@@ -19,11 +20,18 @@ export default function PostCard({ post, user }: PostCardProps) {
       <div className="flex-between">
         <div className="flex items-center gap-3">
           <Link href={`/profile/${post.authorId}`}>
-            <img
+            {/* <img
               src={post.authorImage || "/assets/icons/profile-placeholder.svg"}
               alt="creator"
               className="rounded-full w-12 lg:h-12"
-            />
+            /> */}
+            <Avatar className="w-12 h-12 lg:h-12">
+              <AvatarImage
+                src={
+                  post.authorImage || "/assets/icons/profile-placeholder.svg"
+                }
+              />
+            </Avatar>
           </Link>
           <div className="flex flex-col">
             <p className="base-medium lg:body-bold text-light-1">

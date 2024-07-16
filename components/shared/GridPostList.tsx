@@ -4,6 +4,7 @@ import Link from "next/link";
 import PostStats from "./PostStats";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 type GridPostListProps = {
   posts: Doc<"posts">[];
@@ -31,13 +32,16 @@ export default function GridPostList({
           <div className="grid-post_user">
             {showUser && (
               <div className="flex items-center justify-start gap-2 flex-1">
-                <Image
+                {/* <Image
                   src={post.authorImage}
                   alt="creator"
                   className="rounded-full"
                   height={32}
                   width={32}
-                />
+                /> */}
+                <Avatar>
+                  <AvatarImage src={post.authorImage} alt="creator" />
+                </Avatar>
                 <p className="line-clamp-1">{post.authorName}</p>
               </div>
             )}

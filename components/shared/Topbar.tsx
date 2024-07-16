@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import ProfileSkeleton from "./ProfileSkeleton";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 export default function Topbar() {
   const user = useQuery(api.users.getCurrentUser);
@@ -34,13 +35,11 @@ export default function Topbar() {
             </div>
           ) : (
             <Link href={`/profile/${user._id}`} className="flex-center gap-3">
-              <Image
-                src={user?.imageUrl || "/assets/icons/profile-placeholder.svg"}
-                alt="profile"
-                className="rounded-full min-w-[32px] min-h-[32px]"
-                width={32}
-                height={32}
-              />
+              <Avatar>
+                <AvatarImage
+                  src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
+                />
+              </Avatar>
             </Link>
           )}
         </div>
