@@ -286,3 +286,23 @@ export const userLikedPosts = query({
     return likedPosts;
   },
 });
+
+export const searchPosts = query({
+  args: { paginationOpts: paginationOptsValidator, searchValue: v.string() },
+  handler: async (ctx, args) => {
+    const posts = await ctx.db
+      .query("posts")
+      .order("desc")
+      .paginate(args.paginationOpts);
+    if (!args.searchValue) {
+      return posts;
+    }
+
+    return {
+      ...posts,
+      page: posts.page.filter((post) =>
+        post.caption.includes(args.searchValue)
+      ),
+    };
+  },
+});
